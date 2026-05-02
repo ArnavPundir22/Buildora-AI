@@ -6,6 +6,14 @@ import { useParams } from 'react-router-dom'
 import Editor from '@monaco-editor/react';
 import API_URL from "../config";
 
+function EditorHeader({ title, onClose }) {
+    return (
+        <div className='h-14 px-4 flex items-center justify-between border-b border-white/10'>
+            <span className='font-semibold truncate'>{title}</span>
+            <button onClick={onClose} className='lg:hidden'><X/></button>
+        </div>
+    )
+}
 
 const WebsiteEditor = () => {
     const [website, setWebsite] = useState(null)
@@ -29,6 +37,7 @@ const WebsiteEditor = () => {
     ]
 
     const handleDeploy = async () => {
+    if (!website) return
     try {
         const result = await axios.get(`${API_URL}/api/website/deploy/${website._id}`, {
             withCredentials: true
@@ -132,19 +141,10 @@ document.addEventListener("submit", function(e){
         )
     }
 
-    function Header() {
-        return (
-            <div className='h-14 px-4 flex items-center justify-between border-b border-white/10'>
-                <span className='font-semibold truncate'>{website.title}</span>
-                <button onClick={()=>setShowChat(false)} className='lg:hidden'><X/></button>
-            </div>
-        )
-    }
-
     return (
         <div className='h-screen w-screen flex bg-black text-white overflow-hidden'>
             <aside className='hidden lg:flex w-95 flex-col border-r border-white/10 bg-black/80'>
-                <Header />
+                <EditorHeader title={website.title} onClose={() => setShowChat(false)} />
                 <>
                     <div className='flex-1 overflow-y-auto px-4 py-4 space-y-4'>
                         {messages.map((m, i) => {
@@ -202,7 +202,7 @@ document.addEventListener("submit", function(e){
                         exit={{ y: "100%" }}
                         className='fixed inset-0 z-9999 flex flex-col bg-black'
                     >
-                        <Header />
+                        <EditorHeader title={website.title} onClose={() => setShowChat(false)} />
                         <>
                             <div className='flex-1 overflow-y-auto px-4 py-4 space-y-4'>
                                 {messages.map((m, i) => {
